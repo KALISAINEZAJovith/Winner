@@ -1,7 +1,8 @@
                    --Team Members: [KALISA INEZA Jovith] & [NKURUNZIZA Salomon] 
 
 -- Dataset: Employees
-CREATE TABLE employees (
+CREATE TABLE employee_data
+ (
     employee_id INT,
     employee_name VARCHAR(50),
     department VARCHAR(50),
@@ -11,7 +12,8 @@ CREATE TABLE employees (
 );
 
 -- Sample Data
-INSERT INTO employees VALUES
+INSERT INTO employee_data
+ VALUES
 (1, 'Alice', 'HR', 50000, '2020-01-15', 'East'),
 (2, 'Bob', 'IT', 70000, '2019-03-10', 'West'),
 (3, 'Charlie', 'HR', 52000, '2021-07-23', 'East'),
@@ -30,7 +32,8 @@ SELECT
     LAG(salary) OVER (PARTITION BY department ORDER BY joining_date) AS prev_salary,
     LEAD(salary) OVER (PARTITION BY department ORDER BY joining_date) AS next_salary,
     ROW_NUMBER() OVER (PARTITION BY department ORDER BY joining_date) AS row_num
-FROM employees;
+FROM employee_data
+;
 
 -- 2. Ranking Within a Category
 SELECT 
@@ -40,20 +43,23 @@ SELECT
     salary,
     RANK() OVER (PARTITION BY department ORDER BY salary DESC) AS dept_rank,
     DENSE_RANK() OVER (PARTITION BY department ORDER BY salary DESC) AS dept_dense_rank
-FROM employees;
+FROM employee_data
+;
 
 -- 3. Identifying the Best Records
 -- Top 3 overall
 SELECT * FROM (
     SELECT *, RANK() OVER (ORDER BY salary DESC) AS overall_rank
-    FROM employees
+    FROM employee_data
+    
 ) sub
 WHERE overall_rank <= 3;
 
 -- Top 3 per region
 SELECT * FROM (
     SELECT *, RANK() OVER (PARTITION BY region ORDER BY salary DESC) AS region_rank
-    FROM employees
+    FROM employee_data
+    
 ) sub
 WHERE region_rank <= 3;
 
@@ -61,7 +67,8 @@ WHERE region_rank <= 3;
 SELECT * FROM (
     SELECT *,
         ROW_NUMBER() OVER (PARTITION BY department ORDER BY joining_date) AS rn
-    FROM employees
+    FROM employee_data
+    
 ) sub
 WHERE rn = 1;
 
@@ -73,4 +80,5 @@ SELECT
     salary,
     AVG(salary) OVER (PARTITION BY department) AS dept_avg_salary,
     AVG(salary) OVER () AS overall_avg_salary
-FROM employees;
+FROM employee_data
+;
